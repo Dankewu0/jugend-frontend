@@ -66,7 +66,7 @@ export async function apiFetch<T>(
 
     return body as T;
   } catch (e) {
-    console.error("🔥 Fetch crashed", e);
+    console.error("Fetch crashed", e);
     throw e;
   } finally {
     console.groupEnd();
