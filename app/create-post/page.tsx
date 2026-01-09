@@ -37,7 +37,8 @@ export default function CreatePost() {
     content: "",
     editorProps: {
       attributes: {
-        class: "bg-gray-700 text-white p-3 rounded-lg min-h-[300px]",
+        class:
+          "w-full px-6 py-4 text-white text-base leading-relaxed focus:outline-none",
       },
     },
     immediatelyRender: false,
@@ -73,21 +74,26 @@ export default function CreatePost() {
 
   if (!editorMounted) return null;
 
+  const controlClass =
+    "h-11 px-4 text-sm rounded-lg bg-gray-700 text-white shadow-lg shadow-gray-900 flex items-center";
+
   return (
-    <div className="w-screen h-screen flex items-start justify-center p-8">
+    <div className="w-screen h-screen flex items-start justify-center p-4 sm:p-8">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-gray-800 rounded-2xl border-2 border-gray-900 flex flex-col gap-4 w-full max-w-5xl p-6 overflow-y-auto"
+        className="flex h-full w-full max-w-5xl flex-col gap-4 p-4 sm:p-6"
       >
-        <div className="flex gap-4 items-start">
+        {/* Верхний блок: на мобилке колонка, на ПК ряд */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 items-start">
           <input
             {...register("title")}
             placeholder="Тема поста"
-            className="flex-1 bg-gray-700 text-white p-3 rounded-lg"
+            className={`${controlClass} w-full sm:flex-1`}
           />
+
           <select
             {...register("category_id", { valueAsNumber: true })}
-            className="bg-gray-700 text-white p-3 rounded-lg"
+            className={`${controlClass} w-full sm:flex-1`}
           >
             <option value="">Выбери категорию</option>
             {categories.map((c) => (
@@ -96,21 +102,38 @@ export default function CreatePost() {
               </option>
             ))}
           </select>
-          <input
-            type="file"
-            multiple
-            onChange={(e) => setFiles(Array.from(e.target.files || []))}
-            className="bg-gray-700 text-white p-2 rounded-lg"
-          />
+
+          <label
+            className={`${controlClass} cursor-pointer w-full sm:flex-1 text-center`}
+          >
+            Обзор
+            <input
+              type="file"
+              multiple
+              onChange={(e) => setFiles(Array.from(e.target.files || []))}
+              className="hidden"
+            />
+          </label>
+
           <button
             disabled={isSubmitting}
-            className="bg-gray-700 text-white hover:bg-gray-600 p-3 rounded-lg"
+            className={`${controlClass} hover:bg-gray-600 w-full sm:flex-1`}
           >
-            Создать пост
+            Опубликовать
           </button>
         </div>
 
-        <EditorContent editor={editor} className="mt-4" />
+        {/* Редактор */}
+        <div className="flex-1 flex flex-col gap-2 overflow-hidden">
+          <div className="flex-1 rounded-lg border border-gray-600 bg-gray-700 shadow-lg shadow-gray-900 overflow-y-auto min-h-[300px]">
+            <EditorContent
+              editor={editor}
+              className="p-2 min-h-[300px]"
+              placeholder="Текст поста"
+            />
+          </div>
+        </div>
+
         <p className="text-red-400">{errors.body?.message}</p>
       </form>
     </div>

@@ -14,13 +14,15 @@ type PopularThread = {
 export default function PopularThreads() {
   const [threads, setThreads] = useState<PopularThread[]>([]);
   const router = useRouter();
+
   useEffect(() => {
     apiFetch<PopularThread[]>("/threads/popular")
       .then(setThreads)
       .catch(console.error);
   }, []);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
       {threads.map((t) => (
         <div
           key={t.id}
