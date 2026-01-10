@@ -1,4 +1,5 @@
 import PopularThreads from "@/app/_components/PopularThreads";
+
 export default function Home() {
   return (
     <div>

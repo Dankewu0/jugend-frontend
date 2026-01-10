@@ -3,6 +3,7 @@
 import { apiFetch } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import PopularThreadsSkeleton from "./PopularThreadsSkeleton";
 
 type PopularThread = {
   id: number;
@@ -13,23 +14,38 @@ type PopularThread = {
 
 export default function PopularThreads() {
   const [threads, setThreads] = useState<PopularThread[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     apiFetch<PopularThread[]>("/threads/popular")
-      .then(setThreads)
-      .catch(console.error);
+      .then((data) => {
+        setThreads(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   }, []);
 
+  if (loading || error) return <PopularThreadsSkeleton />;
+
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
+    <div
+      className="grid gap-2 w-full"
+      style={{
+        gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+      }}
+    >
       {threads.map((t) => (
         <div
           key={t.id}
           onClick={() => router.push(`/threads/${t.slug}`)}
-          className="cursor-pointer bg-gray-800 border border-gray-700 rounded-xl p-4 hover:bg-gray-700 transition"
+          className="cursor-pointer bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-center text-white font-medium text-sm h-[60px] px-2 truncate hover:bg-gray-700 transition"
         >
-          <h2 className="text-lg text-white font-semibold">{t.title}</h2>
+          {t.title}
         </div>
       ))}
     </div>
