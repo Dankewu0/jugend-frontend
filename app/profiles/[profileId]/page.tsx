@@ -1,40 +1,24 @@
-"use client";
-
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { UserSchema, UserInput } from "@/app/_schemas/userSchema";
 
-type Thread = {
-  id: number;
-  title: string;
-};
+type Props = { params: { id: string } };
 
-type User = {
-  id: number;
-  name: string;
-  email: string;
-  avatar?: string;
-  threads: Thread[];
-};
+async function fetchUser(userId: string): Promise<UserInput> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`,
+    {
+      cache: "no-store",
+    },
+  );
 
-export default function ProfilePage() {
-  const params = useParams();
-  const userId = params.id;
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  if (!res.ok) throw new Error("Пользователь не найден");
 
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setUser(data);
-        setLoading(false);
-      });
-  }, [userId]);
+  const data = await res.json();
+  return UserSchema.parse(data);
+}
 
-  if (loading) return <div className="p-8 text-white">Загрузка...</div>;
-  if (!user)
-    return <div className="p-8 text-white">Пользователь не найден</div>;
+export default async function ProfilePage({ params }: Props) {
+  const user = await fetchUser(params.id);
 
   return (
     <div className="w-full max-w-5xl mx-auto p-6 text-white">

@@ -1,8 +1,9 @@
 import { z } from "zod";
 
-export const UpdateUserSchema = z.object({
-  name: z.string().min(3).max(255).optional(),
-  email: z.string().email().optional(),
+export const UserSchema = z.object({
+  id: z.number(),
+  name: z.string().min(3).max(255),
+  email: z.string().email(),
   avatar: z
     .any()
     .refine(
@@ -11,6 +12,12 @@ export const UpdateUserSchema = z.object({
       { message: "Файл должен быть изображением" },
     )
     .optional(),
+  threads: z.array(
+    z.object({
+      id: z.number(),
+      title: z.string().min(1),
+    }),
+  ),
 });
 
-export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
+export type UserInput = z.infer<typeof UserSchema>;
